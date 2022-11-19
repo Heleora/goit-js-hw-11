@@ -11,14 +11,17 @@ button {
 }
 input {
     margin: 0;
+    padding: 10px;
     border: none;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     outline: none;
+    font-size: 20px;
     
 }
 .search-button {
     margin: 0;
+    padding: 0 15px;
     border: none;
     background-color: #ffffff;
     border-left: 1px solid #8c90de;
