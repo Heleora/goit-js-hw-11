@@ -28,6 +28,7 @@ img {
 .info {
     outline: 1px solid green;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
     
 }
