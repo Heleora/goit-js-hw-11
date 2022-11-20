@@ -18,7 +18,7 @@
 }
 
 .photo-card {
-    outline: 2px solid red;
+    // outline: 2px solid red;
     margin: 10px; 
     width: calc((100% - 80px) / 4);
     height: calc((100% - 80px) / 4);
@@ -34,7 +34,7 @@
 }
 
 .info {
-    outline: 1px solid green;
+    // outline: 1px solid green;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;

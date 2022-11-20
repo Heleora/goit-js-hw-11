@@ -1,6 +1,6 @@
 // const debounce = require('lodash.debounce');
 import Notiflix from 'notiflix';
-
+import axios from 'axios';
 
 const searchFormRef = document.querySelector("form");
 const galleryRef = document.querySelector(".gallery");
@@ -11,7 +11,7 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 const baseURL = "https://pixabay.com/api/";
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let page = 1;
-const perPage = 100;
+const perPage = 40;
 let numberOfRenderImages = 0;
 
 searchFormRef.addEventListener("submit", searchImages);
@@ -19,25 +19,25 @@ searchFormRef.addEventListener("submit", searchImages);
 function searchImages(evt) {
     evt.preventDefault();
     galleryRef.innerHTML = "";
-    fetchImages(evt);
+    const searchRequest = evt.currentTarget.elements.searchQuery.value;
+    fetchImages(searchRequest);
 };
 
-function fetchImages(evt) {
-const searchRequest = evt.currentTarget.elements.searchQuery.value;
-
-// console.log(searchRequest);
+function fetchImages(searchRequest) {
 fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
 .then(response => response.json())
 .then(data => {
+
+  if (data.hits.length === 0) {
+    galleryRef.innerHTML = "";
+    return Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.");
+};
+
   const totalPermittedImages = data.totalHits; 
   Notiflix.Notify.success(`Hooray! We found ${totalPermittedImages} images.`);
-
-    if (data.hits.length === 0) {
-      galleryRef.innerHTML = "";
-      return Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.");
-};
-    galleryRef.innerHTML = "";    
-    renderImages(data);
+  galleryRef.innerHTML = "";
+      
+  renderImages(data);
 
     const numberOfImagesLeft = totalPermittedImages - numberOfRenderImages;
     console.log(`осталось: ${numberOfImagesLeft}`);
