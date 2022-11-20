@@ -33,14 +33,17 @@ fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=4&q=${searchRequest}&imag
 
     renderImages(data);
 
+    loadMoreBtnRef.classList.remove("hidden");
     loadMoreBtnRef.addEventListener("click", loadMore);
 
     function loadMore () {
       page += 1;
+      loadMoreBtnRef.classList.add("hidden");
       fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=4&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
       .then(response => response.json())
       .then(data => {
         renderImages(data);
+        loadMoreBtnRef.classList.remove("hidden");
       })
       .catch(er => console.log(er.message));
       };
