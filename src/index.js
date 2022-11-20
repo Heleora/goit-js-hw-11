@@ -7,9 +7,10 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 
 // loadMoreBtnRef.addEventListener("click", loadMore);
 
+const baseURL = "https://pixabay.com/api/";
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let page = 1;
-const perPage = 40;
+const perPage = 100;
 let numberOfRenderImages = 0;
 
 searchFormRef.addEventListener("submit", searchImages);
@@ -23,7 +24,7 @@ function fetchImages(evt) {
 const searchRequest = evt.currentTarget.elements.searchQuery.value;
 
 // console.log(searchRequest);
-fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
+fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
 .then(response => response.json())
 .then(data => {
   const totalPermittedImages = data.totalHits; 
@@ -49,17 +50,18 @@ fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=${perPage}&q=${searchRequ
 
       if(numberOfImagesLeft <= perPage){
         loadMoreBtnRef.classList.add("hidden");
-        
+
+        fetch(`${baseURL}?key=${MY_KEY}&per_page=${numberOfImagesLeft}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+        renderImages(data);
+        return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+      })
       };
 
-      fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
+      fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
       .then(response => response.json())
       .then(data => {
-        if (numberOfRenderImages >= totalPermittedImages) {
-          loadMoreBtnRef.classList.add("hidden");
-          return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-        };
-
         renderImages(data);
         loadMoreBtnRef.classList.remove("hidden");
       })
