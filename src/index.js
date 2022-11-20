@@ -9,6 +9,8 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let page = 1;
+const perPage = 40;
+let numberOfRenderImages = 0;
 
 searchFormRef.addEventListener("submit", searchImages);
 
@@ -19,11 +21,13 @@ function searchImages(evt) {
 
 function fetchImages(evt) {
 const searchRequest = evt.currentTarget.elements.searchQuery.value;
+
 // console.log(searchRequest);
-fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=4&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
+fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
 .then(response => response.json())
 .then(data => {
-    // console.log(data.hits[0]);
+  const totalPermittedImages = data.totalHits; 
+  Notiflix.Notify.success(`Hooray! We found ${totalPermittedImages} images.`);
 
     if (data.hits.length === 0) {
       galleryRef.innerHTML = "";
@@ -39,20 +43,35 @@ fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=4&q=${searchRequest}&imag
     function loadMore () {
       page += 1;
       loadMoreBtnRef.classList.add("hidden");
-      fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=4&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
+
+      const numberOfImagesLeft = totalPermittedImages - numberOfRenderImages;
+      console.log(numberOfImagesLeft);
+
+      if(numberOfImagesLeft <= perPage){
+        loadMoreBtnRef.classList.add("hidden");
+        
+      };
+
+      fetch(`https://pixabay.com/api/?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
       .then(response => response.json())
       .then(data => {
+        if (numberOfRenderImages >= totalPermittedImages) {
+          loadMoreBtnRef.classList.add("hidden");
+          return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        };
+
         renderImages(data);
         loadMoreBtnRef.classList.remove("hidden");
       })
-      .catch(er => console.log(er.message));
       };
 })
 .catch(er => console.log(er.message))
 };
 
 function renderImages(data) {
- 
+numberOfRenderImages += perPage;
+// console.log(numberOfRenderImages);
+
 const markup = data.hits.map(image => 
     `<div class="photo-card">
     <div class="photo-thumb">
