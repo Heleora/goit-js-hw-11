@@ -17,6 +17,7 @@ searchFormRef.addEventListener("submit", searchImages);
 
 function searchImages(evt) {
     evt.preventDefault();
+    galleryRef.innerHTML = "";
     fetchImages(evt);
 };
 
@@ -35,8 +36,10 @@ fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_typ
       return Notiflix.Notify.warning("Sorry, there are no images matching your search query. Please try again.");
 };
     galleryRef.innerHTML = "";    
-
     renderImages(data);
+
+    const numberOfImagesLeft = totalPermittedImages - numberOfRenderImages;
+    console.log(`осталось: ${numberOfImagesLeft}`);
 
     loadMoreBtnRef.classList.remove("hidden");
     loadMoreBtnRef.addEventListener("click", loadMore);
@@ -44,35 +47,40 @@ fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_typ
     function loadMore () {
       page += 1;
       loadMoreBtnRef.classList.add("hidden");
-
       const numberOfImagesLeft = totalPermittedImages - numberOfRenderImages;
-      console.log(numberOfImagesLeft);
 
       if(numberOfImagesLeft <= perPage){
-        loadMoreBtnRef.classList.add("hidden");
-
+        console.log("ПОСЛЕДНЯЯ СТРАНИЦА!!!");
         fetch(`${baseURL}?key=${MY_KEY}&per_page=${numberOfImagesLeft}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
         .then(response => response.json())
         .then(data => {
         renderImages(data);
-        return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-      })
+        // loadMoreBtnRef.classList.add("hidden");
+       Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        })
+      .catch(er => console.log(er.message))
       };
 
-      fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
+      if(numberOfImagesLeft > perPage){
+        fetch(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${page}`)
       .then(response => response.json())
       .then(data => {
         renderImages(data);
+        console.log(numberOfRenderImages);
+        const numberOfImagesLeft = totalPermittedImages - numberOfRenderImages;
+        console.log(`осталось: ${numberOfImagesLeft}`);
         loadMoreBtnRef.classList.remove("hidden");
       })
       };
-})
+      
+      };
+    })
 .catch(er => console.log(er.message))
 };
 
 function renderImages(data) {
 numberOfRenderImages += perPage;
-// console.log(numberOfRenderImages);
+console.log(`отрисовано: ${numberOfRenderImages}`);
 
 const markup = data.hits.map(image => 
     `<div class="photo-card">
