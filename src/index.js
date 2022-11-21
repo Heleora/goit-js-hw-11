@@ -45,10 +45,6 @@ loadMoreBtnRef.addEventListener("click", loadMore);
 
 const { height: cardHeight } = galleryRef
   .firstElementChild.getBoundingClientRect();
-window.scrollBy({
-    top: cardHeight * 2,
-    behavior: "smooth",
-});
 
 let gallery = new SimpleLightbox('.photo-item', { captionsData: "alt", captionDelay: 250 });
 
@@ -66,7 +62,7 @@ async function loadMore(){
     loadMoreBtnRef.classList.remove("hidden");
     nextPage += 1;
     window.scrollBy({
-      top: cardHeight * 2,
+      top: cardHeight * 3,
       behavior: "smooth",
   });
     gallery.refresh(); 
