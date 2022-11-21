@@ -1,6 +1,6 @@
 import Notiflix from 'notiflix';
 import axios from 'axios';
-// import SimpleLightbox from 'simplelightbox';
+import SimpleLightbox from 'simplelightbox';
 
 const searchFormRef = document.querySelector("form");
 const galleryRef = document.querySelector(".gallery");
@@ -9,7 +9,7 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 const baseURL = "https://pixabay.com/api/";
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let nextPage = 1;
-const perPage = 40;
+const perPage = 100;
 const totalPages = 500 / perPage;
 
 searchFormRef.addEventListener("submit", searchImages);
@@ -23,7 +23,8 @@ function searchImages(evt) {
 };
 
 async function fetchImages(searchRequest) {
-const response = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
+try {
+  const response = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
 .then(response => {
   const data = response.data.hits;
   if (data.length === 0) {
@@ -56,6 +57,9 @@ async function loadMore(){
   })
   };
 })
+} catch (er) {
+  console.log(er.message);
+}
 };
 
 function renderImages(data) {
