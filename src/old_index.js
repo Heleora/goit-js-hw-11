@@ -1,4 +1,4 @@
-// IS WORKING!!!
+// IS WORKING WITHOUT AXIOS/ASYNC -> only with fetch()!!!
 import Notiflix from 'notiflix';
 import axios from 'axios';
 
