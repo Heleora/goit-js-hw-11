@@ -10,21 +10,23 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 const baseURL = "https://pixabay.com/api/";
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let nextPage = 1;
-const perPage = 4;
+const perPage = 40;
 const totalPages = 500 / perPage;
+let searchRequest = "";
+let gallery = {};
 
 searchFormRef.addEventListener("submit", searchImages);
+loadMoreBtnRef.addEventListener("click", loadMore);
 
 function searchImages(evt) {
   evt.preventDefault();
   galleryRef.innerHTML = "";
   nextPage = 1;
-  let searchRequest = evt.currentTarget.elements.searchQuery.value;
-  fetchImages(searchRequest);
-  searchRequest = "";
-};
+  searchRequest = evt.currentTarget.elements.searchQuery.value;
+  fetchImages();
+  };
 
-async function fetchImages(searchRequest) {
+async function fetchImages() {
 try {
   const response = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
   const data = response.data.hits;
@@ -41,16 +43,17 @@ galleryRef.innerHTML = "";
 renderImages(data);
 nextPage += 1;
 loadMoreBtnRef.classList.remove("hidden");
-loadMoreBtnRef.addEventListener("click", loadMore);
 
-const { height: cardHeight } = galleryRef
-  .firstElementChild.getBoundingClientRect();
+gallery = new SimpleLightbox('.photo-item', { captionsData: "alt", captionDelay: 250 });
 
-let gallery = new SimpleLightbox('.photo-item', { captionsData: "alt", captionDelay: 250 });
+} catch (er) {
+  console.log(er.message);
+}
+};
 
 async function loadMore(){
-  console.log("this is loadMore");
-  loadMoreBtnRef.classList.add("hidden");
+  try {
+    loadMoreBtnRef.classList.add("hidden");
   // console.log("Номер следущей страницы:", nextPage);
   if (nextPage > totalPages){
     return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
@@ -61,17 +64,18 @@ async function loadMore(){
     renderImages(additionalData);
     loadMoreBtnRef.classList.remove("hidden");
     nextPage += 1;
+
+    const { height: cardHeight } = galleryRef
+  .firstElementChild.getBoundingClientRect();
     window.scrollBy({
       top: cardHeight * 3,
       behavior: "smooth",
   });
     gallery.refresh(); 
-    };
-
-} catch (er) {
-  console.log(er.message);
-}
-};
+  } catch (er) {
+    console.log(er.message);
+  }
+  };
 
 function renderImages(data) {
 const markup = data.map(image => 
