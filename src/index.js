@@ -10,7 +10,7 @@ const loadMoreBtnRef = document.querySelector(".load-more");
 const baseURL = "https://pixabay.com/api/";
 const MY_KEY = "31431755-1c4852ed09ff5890501267879";
 let nextPage = 1;
-const perPage = 40;
+const perPage = 4;
 const totalPages = 500 / perPage;
 
 searchFormRef.addEventListener("submit", searchImages);
@@ -19,14 +19,14 @@ function searchImages(evt) {
   evt.preventDefault();
   galleryRef.innerHTML = "";
   nextPage = 1;
-  const searchRequest = evt.currentTarget.elements.searchQuery.value;
+  let searchRequest = evt.currentTarget.elements.searchQuery.value;
   fetchImages(searchRequest);
+  searchRequest = "";
 };
 
 async function fetchImages(searchRequest) {
 try {
   const response = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true`)
-.then(response => {
   const data = response.data.hits;
   if (data.length === 0) {
     galleryRef.innerHTML = "";
@@ -49,14 +49,14 @@ const { height: cardHeight } = galleryRef
 let gallery = new SimpleLightbox('.photo-item', { captionsData: "alt", captionDelay: 250 });
 
 async function loadMore(){
+  console.log("this is loadMore");
   loadMoreBtnRef.classList.add("hidden");
-  console.log("Номер следущей страницы:", nextPage);
+  // console.log("Номер следущей страницы:", nextPage);
   if (nextPage > totalPages){
     return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
   };
   
-  const additionalResponse = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${nextPage}`)
-  .then(additionalResponse => {
+    const additionalResponse = await axios.get(`${baseURL}?key=${MY_KEY}&per_page=${perPage}&q=${searchRequest}&image_type=photo$orientation=horizontal&safesearch=true&page=${nextPage}`)
     const additionalData = additionalResponse.data.hits;
     renderImages(additionalData);
     loadMoreBtnRef.classList.remove("hidden");
@@ -66,9 +66,8 @@ async function loadMore(){
       behavior: "smooth",
   });
     gallery.refresh(); 
-    })
-  };
-})
+    };
+
 } catch (er) {
   console.log(er.message);
 }
